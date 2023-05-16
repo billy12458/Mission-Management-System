@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cabbage.mms.mapper.EvaluationMapper">
+
+    <sql id="comment_select">
+        missionId,id as empId,comment,stars
+    </sql>
+
+    <sql id="comment_select_by_name">
+        mission.missionId,mission.missionName,evalution.missionId,evalution.id as empId,evaluation.comment,evaluation.stars
+    </sql>
+
+    <select id="getCommentById" resultType="com.cabbage.mms.Entity.Evaluation">
+        SELECT <include refid="comment_select"/> FROM evaluation WHERE id = #{empId}
+    </select>
+
+    <select id="getCommentsByMissionId" resultType="com.cabbage.mms.Entity.Evaluation">
+        <!--先这么写着--> 
+        SELECT <include refid="comment_select"/> FROM evaluation WHERE id = #{id} AND missionId = #{missionId}
+    </select>
+
+    <select id="getCommentsByMissionName" resultType="com.cabbage.mms.Entity.Evaluation">
+        <!--先这么写着--> 
+        SELECT <include refid="comment_select_by_name"/> FROM evaluation,mission WHERE id = #{id} AND mission.missionId = evaluation.missionId AND mission.missionName = #{missionName}
+    </select>
+
+    <insert id="addComment" parameterType="com.cabbage.mms.Entity.Evaluation">
+        INSERT INTO evaluation(missionId,id,comment,stars) values(#{missionId},#{empId},#{comment},#{stars})
+    </insert>
+
+</mapper>

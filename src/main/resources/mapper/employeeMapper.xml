@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cabbage.mms.mapper.EmployeeMapper">
+    <!--取别名时，语法为: 数据库字段 as 类属性-->
+    <sql id="profile_select">
+        id,username,occupation,email,type,avatar,sex,age,status,phone,departmentId as departId
+    </sql>
+
+    <sql id="bind_select">
+        id,username,occupation,email,sex,age,phone
+    </sql>
+
+    <select id="findById" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT * FROM employee WHERE id = #{id}
+    </select>
+
+    <select id="findProfileById" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT <include refid="profile_select"/> FROM employee WHERE id = #{id}
+    </select>
+    
+    <select id="findAll" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT <include refid="bind_select"/> FROM employee WHERE departmentId = #{departId}
+    </select>
+
+    <select id="findAllNotBinded" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT <include refid="bind_select"/> FROM employee WHERE departmentId = null
+    </select>
+
+    <update id="bindEmployee" parameterType="com.cabbage.mms.Entity.Employee">
+        UPDATE employee SET departmentId = #{departId} WHERE id = #{id}
+    </update>
+
+    <select id="findAllOrderedByAgeDesc" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT * FROM employee ORDER BY age DESC
+    </select>
+
+    <select id="findAllOrderedByAgeAsc" resultType="com.cabbage.mms.Entity.Employee">
+        SELECT * FROM employee ORDER BY age ASC
+    </select>
+
+    <insert id="saveEmployee" parameterType="com.cabbage.mms.Entity.Employee" useGeneratedKeys="false">
+        insert into employee(id,username,password,salt,occupation,email,type,avatar,start_time,sex,age,status,phone,departmentId) values(#{id},#{username},#{password},#{salt},#{occupation},#{email},#{type},#{avatar},#{startTime},#{sex},#{age},#{status},#{phone},#{departId})
+    </insert>
+
+    <update id="updateStatusById" parameterType="com.cabbage.mms.Entity.Employee">
+        update employee set status = #{status} where id = #{id}
+    </update>
+
+    <update id="updatePasswordByEmail" parameterType="com.cabbage.mms.Entity.Employee">
+        update employee set password = #{password}, salt = #{salt} where email = #{email}
+    </update>
+
+    <update id="updateEmployee" statementType="PREPARED">
+        update employee
+        <set>
+			<if test="employee.username != null">username = #{employee.username},</if>
+			<if test="employee.occupation != null">occupation = #{employee.occupation},</if>
+			<if test="employee.email != null">email = #{employee.email},</if>
+			<if test="employee.avatar != null">avatar = #{employee.avatar},</if>
+			<if test="employee.sex != null">sex = #{employee.sex},</if>
+			<if test="employee.age != null">age = #{employee.age},</if>
+			<if test="employee.phone != null">phone = #{employee.phone},</if>
+			<if test="employee.departId != null">departmentId = #{employee.departId},</if>		
+        </set>
+        where id = #{id}
+    </update>
+    
+</mapper>

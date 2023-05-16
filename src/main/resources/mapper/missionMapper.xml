@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cabbage.mms.mapper.MissionMapper">
+
+    <sql id="mission_select">
+        mission.missionId,mission.missionName,mission.department as departmentId,mission.importance,mission.startTime,mission.endTime,mission.workTime,mission.description,mission.status
+    </sql>
+    
+    <select id="findAll" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM mission
+    </select>
+
+    <select id="findMissionById" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM employee,emp_mission,mission WHERE employee.id = #{id} AND employee.id = emp_mission.id AND emp_mission.missionId = mission.missionId
+    </select>
+
+    <insert id="addMission" parameterType="com.cabbage.mms.Entity.Mission" keyProperty="missionId" useGeneratedKeys="false">
+        INSERT INTO mission(missionId,missionName,department,importance,startTime,endTime,workTime,description,status) VALUES (#{missionId},#{missionName},#{departmentId},#{importance},#{startTime},#{endTime},#{workTime},#{description},#{status})
+    </insert>
+
+    <select id="findCompletedById" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM employee,emp_mission,mission WHERE employee.id = #{id} AND employee.id = emp_mission.id AND emp_mission.missionId = mission.missionId AND mission.status = 1
+    </select>
+
+    <select id="findNotCompletedById" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM employee,emp_mission,mission WHERE employee.id = #{id} AND employee.id = emp_mission.id AND emp_mission.missionId = mission.missionId AND mission.status &lt; 1
+    </select>
+
+    <select id="findEmergentById" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM employee,emp_mission,mission WHERE employee.id = #{id} AND employee.id = emp_mission.id AND emp_mission.missionId = mission.missionId AND mission.importance = 1
+    </select>
+
+    <select id="getDepartmentIds" resultType="java.lang.Integer">
+        SELECT departId FROM department
+    </select>
+
+    <select id="getEmpIdsInDepartment" resultType="java.lang.Integer">
+        SELECT id FROM employee WHERE departmentId = #{departId}
+    </select>
+
+    <select id="getDepartmentId" resultType="java.lang.Integer">
+        SELECT departmentId FROM employee WHERE id= #{id}
+    </select>
+
+    <select id="getMissionByMissionId" resultType="com.cabbage.mms.Entity.Mission">
+        SELECT <include refid="mission_select"/> FROM mission WHERE missionId = #{missionId}
+    </select>
+
+    <insert id="insertEmpMission">
+        INSERT INTO emp_mission(id,missionId) VALUES (#{id},#{missionId})
+    </insert>
+
+</mapper>
